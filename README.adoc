@@ -1,0 +1,5 @@
+= Vert.x JPA
+
+
+This provides an asynchronous interface around a JDBC datasource so you can persist, merge, delete in a simple way.
+

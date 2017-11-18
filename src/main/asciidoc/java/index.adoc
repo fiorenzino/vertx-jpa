@@ -1,0 +1,16 @@
+= Vert.x JPA
+
+This client allows you to interact with any JDBC compliant database using JsonObject from your Vert.x
+application.
+
+
+* Maven (in your `pom.xml`):
+
+[source,xml,subs="+attributes"]
+----
+<dependency>
+  <groupId>io.vertx</groupId>
+  <artifactId>vertx-jpa</artifactId>
+  <version>3.5.1-SNAPSHOT</version>
+</dependency>
+----
