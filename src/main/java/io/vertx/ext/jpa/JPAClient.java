@@ -9,6 +9,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jpa.impl.JPAClientImpl;
 import io.vertx.ext.jpa.sql.JPAConnection;
+import io.vertx.ext.jpa.util.RestrinctionHandler;
+import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLClient;
 import io.vertx.ext.sql.UpdateResult;
 
@@ -132,6 +134,96 @@ public interface JPAClient extends SQLClient
     });
     return this;
   }
+
+  /**
+   * Executes the given prepared statement which may be an <code>SELECT</code> WITH NAMED PARAMETERS
+   * statement with the given parameters, this method acquires a connection from the the pool and executes the SQL
+   * statement and returns it back after the execution.
+   *
+   * @param sql         the table to execute.
+   * @param params        these are the parameters name with values to fill the statement.
+   * @param handler the handler which is called once the operation completes.
+   * @see java.sql.Statement#executeUpdate(String)
+   * @see java.sql.PreparedStatement#executeUpdate(String)
+   */
+
+  @Fluent
+  default JPAClient query(String sql, JsonObject params, Handler<AsyncResult<ResultSet>> handler) {
+    getJPAConnection(getJPAConnection -> {
+      if (getJPAConnection.failed()) {
+        handler.handle(Future.failedFuture(getJPAConnection.cause()));
+      } else {
+        final JPAConnection conn = getJPAConnection.result();
+
+        conn.query(sql,  params, query -> {
+          if (query.failed()) {
+            conn.close(close -> {
+              if (close.failed()) {
+                handler.handle(Future.failedFuture(close.cause()));
+              } else {
+                handler.handle(Future.failedFuture(query.cause()));
+              }
+            });
+          } else {
+            conn.close(close -> {
+              if (close.failed()) {
+                handler.handle(Future.failedFuture(close.cause()));
+              } else {
+                handler.handle(Future.succeededFuture(query.result()));
+              }
+            });
+          }
+        });
+      }
+    });
+    return this;
+  }
+
+  /**
+   * Executes the given prepared statement which may be an <code>SELECT</code> WITH NAMED PARAMETERS GENERATED generated dynamically
+   * statement with the given parameters, this method acquires a connection from the the pool and executes the SQL
+   * statement and returns it back after the execution.
+   *
+   * @param table         the table to execute.
+   * @param params        these are the parameters name with values to fill the statement.
+   * @param restrinctionHandler the restrinctionHandler which is called to generate dynamically the sql query.
+   * @param handler the handler which is called once the operation completes.
+   * @see java.sql.Statement#executeUpdate(String)
+   * @see java.sql.PreparedStatement#executeUpdate(String)
+   */
+
+  @Fluent
+  default JPAClient query(String table, JsonObject params, RestrinctionHandler<JsonObject, String, StringBuffer> restrinctionHandler, Handler<AsyncResult<ResultSet>> handler) {
+    getJPAConnection(getJPAConnection -> {
+      if (getJPAConnection.failed()) {
+        handler.handle(Future.failedFuture(getJPAConnection.cause()));
+      } else {
+        final JPAConnection conn = getJPAConnection.result();
+
+        conn.query(table,  params, restrinctionHandler, query -> {
+          if (query.failed()) {
+            conn.close(close -> {
+              if (close.failed()) {
+                handler.handle(Future.failedFuture(close.cause()));
+              } else {
+                handler.handle(Future.failedFuture(query.cause()));
+              }
+            });
+          } else {
+            conn.close(close -> {
+              if (close.failed()) {
+                handler.handle(Future.failedFuture(close.cause()));
+              } else {
+                handler.handle(Future.succeededFuture(query.result()));
+              }
+            });
+          }
+        });
+      }
+    });
+    return this;
+  }
+
 
   /**
    * Executes the given prepared statement which may be an <code>UPDATE</code>

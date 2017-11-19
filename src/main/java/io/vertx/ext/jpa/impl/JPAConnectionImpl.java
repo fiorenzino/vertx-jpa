@@ -25,11 +25,9 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.spi.metrics.PoolMetrics;
 import io.vertx.ext.jdbc.impl.actions.*;
-import io.vertx.ext.jpa.impl.actions.JDBCDelete;
-import io.vertx.ext.jpa.impl.actions.JDBCMerge;
-import io.vertx.ext.jpa.impl.actions.JDBCPersist;
-import io.vertx.ext.jpa.impl.actions.JPAStatementHelper;
+import io.vertx.ext.jpa.impl.actions.*;
 import io.vertx.ext.jpa.sql.JPAConnection;
+import io.vertx.ext.jpa.util.RestrinctionHandler;
 import io.vertx.ext.sql.*;
 
 import java.sql.Connection;
@@ -262,7 +260,7 @@ class JPAConnectionImpl implements JPAConnection
   @Override
   public JPAConnection persist(String table, JsonObject params, Handler<AsyncResult<UpdateResult>> resultHandler)
   {
-    new JDBCPersist(vertx, helper, options, ctx, params, table).execute(conn, statementsQueue, resultHandler);
+    new JPAPersist(vertx, helper, options, ctx, params, table).execute(conn, statementsQueue, resultHandler);
     return this;
   }
 
@@ -270,14 +268,29 @@ class JPAConnectionImpl implements JPAConnection
   public JPAConnection merge(String table, JsonObject params, JsonObject key,
     Handler<AsyncResult<UpdateResult>> resultHandler)
   {
-    new JDBCMerge(vertx, helper, options, ctx, params, table, key).execute(conn, statementsQueue, resultHandler);
+    new JPAMerge(vertx, helper, options, ctx, params, table, key).execute(conn, statementsQueue, resultHandler);
     return this;
   }
 
   @Override
   public JPAConnection delete(String table, JsonObject key, Handler<AsyncResult<UpdateResult>> resultHandler)
   {
-    new JDBCDelete(vertx, helper, options, ctx, table, key).execute(conn, statementsQueue, resultHandler);
+    new JPADelete(vertx, helper, options, ctx, table, key).execute(conn, statementsQueue, resultHandler);
     return this;
   }
+
+  @Override
+  public JPAConnection query(String sql, JsonObject params, Handler<AsyncResult<ResultSet>> resultHandler)
+  {
+    new JPAQuery(vertx, helper, options, ctx, params, sql).execute(conn, statementsQueue, resultHandler);
+    return this;
+  }
+
+  @Override
+  public JPAConnection query(String table, JsonObject params, RestrinctionHandler<JsonObject, String, StringBuffer> restictionHandler, Handler<AsyncResult<ResultSet>> resultHandler)
+  {
+    new JPAHandlerQuery(vertx, helper, options, ctx, table, params, restictionHandler).execute(conn, statementsQueue, resultHandler);
+    return this;
+  }
+
 }

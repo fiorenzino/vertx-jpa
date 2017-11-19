@@ -1,5 +1,14 @@
-= Vert.x JPA
+= Vert.x Json Persistence similAr to JPA
 
 
-This provides an asynchronous interface around a JDBC datasource so you can persist, merge, delete in a simple way.
+This provides an asynchronous interface around a JDBC datasource to:
+
+- delete
+- merge
+- persist
+- query with named parameters
+- query with dynamic restrictions handler
+
+
+ in a simple way.
 
