@@ -14,7 +14,7 @@
  * under the License.
  */
 
-package io.vertx.ext.jpa;
+package io.vertx.ext.jpa.base;
 
 import io.vertx.core.json.JsonObject;
 

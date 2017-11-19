@@ -1,8 +1,11 @@
 = Vert.x JPA
 
-This client allows you to interact with any JDBC compliant database using JsonObject from your Vert.x
+This client allows you to interact with any JDBC compliant database using an asynchronous API from your Vert.x
 application.
 
+The client API is represented with the interface `link:../../apidocs/io/vertx/ext/jdbc/JPAClient.html[JPAClient]`.
+
+To use this project, add the following dependency to the _dependencies_ section of your build descriptor:
 
 * Maven (in your `pom.xml`):
 
@@ -11,6 +14,119 @@ application.
 <dependency>
   <groupId>io.vertx</groupId>
   <artifactId>vertx-jpa</artifactId>
-  <version>3.5.1-SNAPSHOT</version>
+  <version>3.5.0</version>
 </dependency>
 ----
+
+* Gradle (in your `build.gradle` file):
+
+[source,groovy,subs="+attributes"]
+----
+compile 'io.vertx:vertx-jpa:3.5.0'
+----
+
+== Creating a the client
+
+There are several ways to create a JPAClient. Let's go through them all.
+
+=== Using default shared data source
+
+In most cases you will want to share a data source between different client instances.
+
+E.g. you scale your application by deploying multiple instances of your verticle and you want each verticle instance
+to share the same datasource so you don't end up with multiple pools
+
+You do this as follows:
+
+[source,java]
+----
+JPAClient client = JPAClient.createShared(vertx, config);
+----
+
+The first call to `link:../../apidocs/io/vertx/ext/jdbc/JPAClient.html#createShared-io.vertx.core.Vertx-io.vertx.core.json.JsonObject-[JPAClient.createShared]`
+will actually create the data source, and the specified config will be used.
+
+Subsequent calls will return a new client instance that uses the same data source, so the configuration won't be used.
+
+=== Specifying a data source name
+
+You can create a client specifying a data source name as follows
+
+[source,java]
+----
+JPAClient client = JPAClient.createShared(vertx, config, "MyDataSource");
+----
+
+If different clients are created using the same Vert.x instance and specifying the same data source name, they will
+share the same data source.
+
+The first call to `link:../../apidocs/io/vertx/ext/jdbc/JPAClient.html#createShared-io.vertx.core.Vertx-io.vertx.core.json.JsonObject-[JPAClient.createShared]`
+will actually create the data source, and the specified config will be used.
+
+Subsequent calls will return a new client instance that uses the same data source, so the configuration won't be used.
+
+Use this way of creating if you wish different groups of clients to have different data sources, e.g. they're
+interacting with different databases.
+
+=== Creating a client with a non shared data source
+
+In most cases you will want to share a data source between different client instances.
+However, it's possible you want to create a client instance that doesn't share its data source with any other client.
+
+In that case you can use `link:../../apidocs/io/vertx/ext/jdbc/JPAClient.html#createNonShared-io.vertx.core.Vertx-io.vertx.core.json.JsonObject-[JPAClient.createNonShared]`.
+
+[source,java]
+----
+JPAClient client = JPAClient.createNonShared(vertx, config);
+----
+
+This is equivalent to calling `link:../../apidocs/io/vertx/ext/jdbc/JPAClient.html#createShared-io.vertx.core.Vertx-io.vertx.core.json.JsonObject-java.lang.String-[JPAClient.createShared]`
+with a unique data source name each time.
+
+=== Specifying a data source
+
+If you already have a pre-existing data source, you can also create the client directly specifying that:
+
+[source,java]
+----
+JPAClient client = JPAClient.create(vertx, dataSource);
+----
+
+== Closing the client
+
+It's fine to keep hold of the client for a long time (e.g. the lifetime of your verticle), but once you're
+done with it you should close it.
+
+Clients that share a data source with other client instances are reference counted. Once the last one that references
+the same data source is closed, the data source will be closed.
+
+=== Automatic clean-up in verticles
+
+If you're creating clients from inside verticles, the clients will be automatically closed when the verticle is undeployed.
+
+== Getting a connection
+
+Once you've created a client you use `link:../../apidocs/io/vertx/ext/jdbc/JPAClient.html#getJPAConnection-io.vertx.core.Handler-[getJPAConnection]` to get
+a connection.
+
+This will return the connection in the handler when one is ready from the pool.
+
+[source,java]
+----
+jpaClient.getJPAConnection(connection -> {
+         if (connection.succeeded())
+         {
+            persist(TABLE_NAME, params, connection.result(), handler);
+         }
+         else
+         {
+            handler.handle(Future.failedFuture(connection.cause()));
+         }
+         connection.result().close();
+      });
+----
+
+The connection is an instance of `link:../../apidocs/io/vertx/ext/sql/SQLConnection.html[SQLConnection]` which is a common interface not only used by
+the Vert.x JDBC Client.
+
+You can learn how to use it in the http://vertx.io/docs/vertx-sql-common/java/[common sql interface] documentation.

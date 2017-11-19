@@ -1,4 +1,4 @@
-= Vert.x Json Persistence similAr to JPA
+= Vert.x **J**son **P**ersistence simil**A**r to JPA
 
 
 This provides an asynchronous interface around a JDBC datasource to:
