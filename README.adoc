@@ -34,7 +34,6 @@ This provides an asynchronous interface around a JDBC datasource to:
       {
          String alias = "a";
          String separator = " WHERE ";
-
          @Override public void handle(JsonObject params, String table, StringBuffer toSql)
          {
             toSql.append("select * from " + table + " " + alias + " ");
