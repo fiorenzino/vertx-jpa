@@ -4,14 +4,28 @@
 This provides an asynchronous interface around a JDBC datasource to:
 
 - create table
+
+     jpaClient.create(CREATE_TABLE, result -> {});
+
 - delete
+
+     jpaClient.delete(TABLE, new JsonObject().put(KEY_TABLE, whiskyP.uuid), result_d -> {});
+
 - merge
+
+      connection.merge(TABLE, whiskyU.toJson(), new JsonObject().put(KEY_TABLE, whiskyU.uuid), result_m -> {});
+
 - persist
-- query with named parameters
+
+      connection.persist(TABLE, whiskyP.toJson(), result_p -> {});
+
+- query with named parameter
+
+       connection.query("selct * from " + TABLE + " where name = :NAME ", new JsonObject().put("NAME", whiskyU.name),
+                        result_q-> {});
+
 - query with dynamic restrictions handler
 
-
- in a simple way.
 
 
 It's a vertx-jdbc clone with new Actions:
