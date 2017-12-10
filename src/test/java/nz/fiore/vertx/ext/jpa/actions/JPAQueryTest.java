@@ -1,6 +1,8 @@
 package nz.fiore.vertx.ext.jpa.actions;
 
+import io.reactivex.Single;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -27,7 +29,7 @@ public class JPAQueryTest extends AbstractBaseTest
                System.out.println("persist");
                Assert.assertTrue(result_p.succeeded());
                connection.query("select * from " + TABLE + " where name = :NAME ",
-                        new JsonObject().put("NAME", whiskyP.name), result_q-> {
+                        new JsonObject().put("NAME", whiskyP.name), result_q -> {
                            System.out.println("query");
                            Assert.assertTrue(result_q.succeeded());
                            Assert.assertEquals(result_q.result().getRows().size(), 1);
@@ -42,7 +44,23 @@ public class JPAQueryTest extends AbstractBaseTest
    public void rxQuery(TestContext context)
    {
       Async async = context.async();
-
-      async.complete();
+      jpaClient.rxGetConnection()
+               .flatMap(conn -> {
+                  Single<ResultSet> resa = conn.rxCreate(CREATE_TABLE)
+                           .flatMap(result1 -> conn.rxPersist(TABLE, whiskyP.toJson()))
+                           .flatMap(result3 -> conn.rxQuery(SELECT_COUNT_AS_NUM_QUERY, new JsonObject()))
+                           .doOnSuccess(success -> {
+                              Assert.assertEquals(success.getRows().get(0).getInteger(COUNT_ALIAS).intValue(), 1);
+                           });
+                  return resa.doAfterTerminate(conn::close);
+               }).subscribe(resultSet -> {
+         // Subscribe to the final result
+         Assert.assertEquals(resultSet.getResults().size(), 1);
+         async.complete();
+      }, err -> {
+         err.printStackTrace();
+         async.complete();
+      });
    }
 }
+
