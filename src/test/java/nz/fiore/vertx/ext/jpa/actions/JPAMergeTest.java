@@ -24,7 +24,14 @@ public class JPAMergeTest extends AbstractBaseTest
          JPAConnection connection = conn.result();
          connection.create(CREATE_TABLE_QUERY, result -> {
             System.out.println("create table");
-            Assert.assertTrue(result.succeeded());
+            if (result.succeeded())
+            {
+
+            }
+            else
+            {
+               result.cause().printStackTrace();
+            }
             connection.persist(TABLE, whiskyP.toJson(), result_p -> {
                System.out.println("persist");
                Assert.assertTrue(result_p.succeeded());

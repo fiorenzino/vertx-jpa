@@ -20,7 +20,14 @@ public class JPACreateTest extends AbstractBaseTest
    {
       Async async = context.async();
       jpaClient.create(CREATE_TABLE_QUERY, result -> {
-         Assert.assertTrue(result.succeeded());
+         if (result.succeeded())
+         {
+
+         }
+         else
+         {
+            result.cause().printStackTrace();
+         }
          async.complete();
       });
    }

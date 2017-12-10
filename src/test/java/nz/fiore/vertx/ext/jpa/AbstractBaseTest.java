@@ -4,6 +4,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import nz.fiore.vertx.ext.jpa.model.Whisky;
+import org.junit.After;
 import org.junit.Before;
 
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ public abstract class AbstractBaseTest
 {
 
    public static String TABLE = "whiskies";
-   public static String CREATE_TABLE_QUERY = "create table " + TABLE
+   public static String CREATE_TABLE_QUERY = "create table IF NOT EXISTS " + TABLE
             + " (uuid varchar(255), name varchar(255), collection_name varchar(255), date datetime NULL, amount decimal(19,4) )";
    public static String TABLE_KEY = "uuid";
    public static String CREATE_TABLE_TYPO_ERROR_QUERY = "create table  " + TABLE
@@ -39,6 +40,7 @@ public abstract class AbstractBaseTest
    @Before
    public void setUp()
    {
+      System.out.println("setUp");
       vertx = Vertx.vertx();
       jpaClient = JPAClient.createShared(vertx, config);
       whiskyP = new Whisky(UUID.randomUUID().toString(), "flower");
@@ -47,5 +49,14 @@ public abstract class AbstractBaseTest
                new BigDecimal(33L));
       whiskyU = new Whisky(whiskyP.toJson());
       whiskyU.name = "flower UP";
+   }
+
+   @After
+   public void shutDown()
+   {
+      jpaClient.create(CREATE_TABLE_QUERY, result -> {});
+      System.out.println("shutDown");
+      vertx.close();
+      jpaClient.close();
    }
 }
