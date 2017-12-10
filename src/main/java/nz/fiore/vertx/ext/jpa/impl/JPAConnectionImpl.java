@@ -17,7 +17,6 @@
 package nz.fiore.vertx.ext.jpa.impl;
 
 import io.reactivex.Single;
-import io.vertx.codegen.annotations.Fluent;
 import io.vertx.core.*;
 import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.TaskQueue;
@@ -27,10 +26,10 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.spi.metrics.PoolMetrics;
 import io.vertx.ext.jdbc.impl.actions.*;
+import io.vertx.ext.sql.*;
 import nz.fiore.vertx.ext.jpa.impl.actions.*;
 import nz.fiore.vertx.ext.jpa.sql.JPAConnection;
 import nz.fiore.vertx.ext.jpa.util.RestrinctionHandler;
-import io.vertx.ext.sql.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;

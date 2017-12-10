@@ -1,15 +1,13 @@
 package nz.fiore.vertx.ext.jpa.sql;
 
 import io.reactivex.Single;
-import io.vertx.codegen.annotations.Fluent;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import nz.fiore.vertx.ext.jpa.util.RestrinctionHandler;
 import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLConnection;
 import io.vertx.ext.sql.UpdateResult;
+import nz.fiore.vertx.ext.jpa.util.RestrinctionHandler;
 
 public interface JPAConnection extends SQLConnection
 {
@@ -22,17 +20,17 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   SQLConnection create(String sql, Handler<AsyncResult<Void>> resultHandler);
 
   /**
    * Executes the given prepared statement which may be an <code>CREATE TABLE</code>.
    *
-   * @param sql           the table to execute.
+   * @param sql the table to execute.
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   Single<Void> rxCreate(String sql);
 
   /**
@@ -45,7 +43,7 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   SQLConnection persist(String table, JsonObject params, Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
@@ -57,7 +55,7 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   Single<UpdateResult> rxPersist(String table, JsonObject params);
 
   /**
@@ -71,7 +69,7 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   SQLConnection merge(String table, JsonObject params, JsonObject key,
     Handler<AsyncResult<UpdateResult>> resultHandler);
 
@@ -85,7 +83,7 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   Single<UpdateResult> rxMerge(String table, JsonObject params, JsonObject key);
 
   /**
@@ -98,7 +96,7 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   SQLConnection delete(String table, JsonObject key, Handler<AsyncResult<UpdateResult>> resultHandler);
 
   /**
@@ -110,7 +108,7 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   Single<UpdateResult> rxDelete(String table, JsonObject key);
 
   /**
@@ -123,7 +121,7 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   SQLConnection query(String table, JsonObject params, Handler<AsyncResult<ResultSet>> resultHandler);
 
   /**
@@ -135,7 +133,6 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
   Single<ResultSet> rxQuery(String sql, JsonObject params);
 
   /**
@@ -149,7 +146,6 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
   SQLConnection query(String table, JsonObject params,
     RestrinctionHandler<JsonObject, String, StringBuffer> restictionHandler,
     Handler<AsyncResult<ResultSet>> resultHandler);
@@ -164,7 +160,7 @@ public interface JPAConnection extends SQLConnection
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   Single<ResultSet> rxQuery(String sql, JsonObject params,
     RestrinctionHandler<JsonObject, String, StringBuffer> restictionHandler);
 }

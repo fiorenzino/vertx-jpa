@@ -1,8 +1,6 @@
 package nz.fiore.vertx.ext.jpa;
 
 import io.reactivex.Single;
-import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -114,7 +112,7 @@ public interface JPAClient extends SQLClient
    * @param dataSource the datasource
    * @return the client
    */
-  @GenIgnore
+
   static JPAClient create(Vertx vertx, DataSource dataSource)
   {
     return new JPAClientImpl(vertx, dataSource);
@@ -126,7 +124,7 @@ public interface JPAClient extends SQLClient
    *
    * @param handler the handler which is called when the <code>JdbcConnection</code> object is ready for use.
    */
-  @Fluent
+
   public JPAClient getJPAConnection(Handler<AsyncResult<JPAConnection>> handler);
 
   /**
@@ -141,7 +139,7 @@ public interface JPAClient extends SQLClient
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
 
-  @Fluent
+
   default JPAClient persist(String table, JsonObject params, Handler<AsyncResult<UpdateResult>> handler)
   {
     getJPAConnection(getJPAConnection -> {
@@ -198,7 +196,7 @@ public interface JPAClient extends SQLClient
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
 
-  @Fluent
+
   default JPAClient query(String sql, JsonObject params, Handler<AsyncResult<ResultSet>> handler)
   {
     getJPAConnection(getJPAConnection -> {
@@ -256,7 +254,7 @@ public interface JPAClient extends SQLClient
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
 
-  @Fluent
+
   default JPAClient query(String table, JsonObject params,
     RestrinctionHandler<JsonObject, String, StringBuffer> restrinctionHandler, Handler<AsyncResult<ResultSet>> handler)
   {
@@ -314,7 +312,7 @@ public interface JPAClient extends SQLClient
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   default JPAClient merge(String table, JsonObject params, JsonObject key, Handler<AsyncResult<UpdateResult>> handler)
   {
     getJPAConnection(getJPAConnection -> {
@@ -370,7 +368,7 @@ public interface JPAClient extends SQLClient
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
-  @Fluent
+
   default JPAClient delete(String table, JsonObject key, Handler<AsyncResult<UpdateResult>> handler)
   {
     getJPAConnection(getJPAConnection -> {
