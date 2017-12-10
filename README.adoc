@@ -13,3 +13,15 @@ This provides an asynchronous interface around a JDBC datasource to:
 
  in a simple way.
 
+
+It's a vertx-jdbc clone with new Actions:
+- JPACreate
+- JPADelete
+- JPAHandlerQuery
+- JPAMerge
+- JPAPersist
+- JPAQuery
+- JPAStatementHelper
+
+
+Also with rxActions inside!
