@@ -17,6 +17,7 @@
 package nz.fiore.vertx.ext.jpa.impl;
 
 import io.reactivex.Single;
+import io.vertx.codegen.annotations.Fluent;
 import io.vertx.core.*;
 import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.TaskQueue;
@@ -325,11 +326,28 @@ class JPAConnectionImpl implements JPAConnection
     return this;
   }
 
+  @Override
   public Single<ResultSet> rxQuery(String sql, JsonObject params,
     RestrinctionHandler<JsonObject, String, StringBuffer> restictionHandler)
   {
     return new io.vertx.reactivex.core.impl.AsyncResultSingle<ResultSet>(handler -> {
       query(sql, params, restictionHandler, handler);
+    });
+  }
+
+  @Override
+  public JPAConnection create(String sql, Handler<AsyncResult<Void>> resultHandler)
+  {
+    new JPACreate(vertx, options, ctx, sql)
+      .execute(conn, statementsQueue, resultHandler);
+    return this;
+  }
+
+  @Override
+  public Single<Void> rxCreate(String sql)
+  {
+    return new io.vertx.reactivex.core.impl.AsyncResultSingle<Void>(handler -> {
+      create(sql, handler);
     });
   }
 

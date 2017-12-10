@@ -4,6 +4,7 @@ import io.reactivex.Single;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import nz.fiore.vertx.ext.jpa.util.RestrinctionHandler;
 import io.vertx.ext.sql.ResultSet;
@@ -12,6 +13,27 @@ import io.vertx.ext.sql.UpdateResult;
 
 public interface JPAConnection extends SQLConnection
 {
+
+  /**
+   * Executes the given prepared statement which may be an <code>CREATE TABLE</code>.
+   *
+   * @param sql           the table to execute.
+   * @param resultHandler the handler which is called once the operation completes.
+   * @see java.sql.Statement#executeUpdate(String)
+   * @see java.sql.PreparedStatement#executeUpdate(String)
+   */
+  @Fluent
+  SQLConnection create(String sql, Handler<AsyncResult<Void>> resultHandler);
+
+  /**
+   * Executes the given prepared statement which may be an <code>CREATE TABLE</code>.
+   *
+   * @param sql           the table to execute.
+   * @see java.sql.Statement#executeUpdate(String)
+   * @see java.sql.PreparedStatement#executeUpdate(String)
+   */
+  @Fluent
+  Single<Void> rxCreate(String sql);
 
   /**
    * Executes the given prepared statement which may be an <code>INSERT</code>
@@ -26,18 +48,18 @@ public interface JPAConnection extends SQLConnection
   @Fluent
   SQLConnection persist(String table, JsonObject params, Handler<AsyncResult<UpdateResult>> resultHandler);
 
-
   /**
    * Executes the given prepared statement which may be an <code>INSERT</code>
    * statement with the given parameters
    *
-   * @param table         the table to execute.
-   * @param params        these are the parameters name with values to fill the statement.
+   * @param table  the table to execute.
+   * @param params these are the parameters name with values to fill the statement.
    * @see java.sql.Statement#executeUpdate(String)
    * @see java.sql.PreparedStatement#executeUpdate(String)
    */
   @Fluent
   Single<UpdateResult> rxPersist(String table, JsonObject params);
+
   /**
    * Executes the given prepared statement which may be an <code>UPDATE</code>
    * statement with the given parameters

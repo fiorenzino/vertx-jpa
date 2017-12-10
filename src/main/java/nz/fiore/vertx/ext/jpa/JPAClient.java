@@ -1,5 +1,6 @@
 package nz.fiore.vertx.ext.jpa;
 
+import io.reactivex.Single;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.AsyncResult;
@@ -7,12 +8,12 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import nz.fiore.vertx.ext.jpa.impl.JPAClientImpl;
-import nz.fiore.vertx.ext.jpa.sql.JPAConnection;
-import nz.fiore.vertx.ext.jpa.util.RestrinctionHandler;
 import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLClient;
 import io.vertx.ext.sql.UpdateResult;
+import nz.fiore.vertx.ext.jpa.impl.JPAClientImpl;
+import nz.fiore.vertx.ext.jpa.sql.JPAConnection;
+import nz.fiore.vertx.ext.jpa.util.RestrinctionHandler;
 
 import javax.sql.DataSource;
 import java.util.UUID;
@@ -412,6 +413,72 @@ public interface JPAClient extends SQLClient
       }
     });
     return this;
+  }
+  /**
+   * Executes the given prepared statement which may be an <code>CREATE TABLE</code>
+   * statement with the given parameters, this method acquires a connection from the the pool and executes the SQL
+   * statement and returns it back after the execution.
+   *
+   * @param sql   the sql to execute.
+   * @param handler the handler which is called once the operation completes.
+   * @see java.sql.Statement#executeUpdate(String)
+   * @see java.sql.PreparedStatement#executeUpdate(String)
+   */
+  default JPAClient create(String sql, Handler<AsyncResult<Void>> handler)
+  {
+    getJPAConnection(getJPAConnection -> {
+      if (getJPAConnection.failed())
+      {
+        handler.handle(Future.failedFuture(getJPAConnection.cause()));
+      }
+      else
+      {
+        final JPAConnection conn = getJPAConnection.result();
+
+        conn.create(sql, query -> {
+          if (query.failed())
+          {
+            conn.close(close -> {
+              if (close.failed())
+              {
+                handler.handle(Future.failedFuture(close.cause()));
+              }
+              else
+              {
+                handler.handle(Future.failedFuture(query.cause()));
+              }
+            });
+          }
+          else
+          {
+            conn.close(close -> {
+              if (close.failed())
+              {
+                handler.handle(Future.failedFuture(close.cause()));
+              }
+              else
+              {
+                handler.handle(Future.succeededFuture(query.result()));
+              }
+            });
+          }
+        });
+      }
+    });
+    return this;
+  }
+
+  /**
+   * Returns a connection that can be used to perform SQL operations on. It's important to remember
+   * to close the connection when you are done, so it is returned to the pool.
+   *
+   * @return
+   */
+  default Single<JPAConnection> rxGetConnection()
+  {
+    return new io.vertx.reactivex.core.impl.AsyncResultSingle<JPAConnection>(handler -> {
+      getJPAConnection(handler);
+    });
   }
 
 }
