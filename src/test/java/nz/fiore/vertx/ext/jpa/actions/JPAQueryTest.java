@@ -26,11 +26,11 @@ public class JPAQueryTest extends AbstractBaseTest
             connection.persist(TABLE, whiskyP.toJson(), result_p -> {
                System.out.println("persist");
                Assert.assertTrue(result_p.succeeded());
-               connection.query("selct * from " + TABLE + " where name = :NAME ",
-                        new JsonObject().put("NAME", whiskyU.name), result_q-> {
-                           System.out.println("merge");
+               connection.query("select * from " + TABLE + " where name = :NAME ",
+                        new JsonObject().put("NAME", whiskyP.name), result_q-> {
+                           System.out.println("query");
                            Assert.assertTrue(result_q.succeeded());
-                           Assert.assertEquals(result_q.result().getRows(), 1);
+                           Assert.assertEquals(result_q.result().getRows().size(), 1);
                            async.complete();
                         });
             });

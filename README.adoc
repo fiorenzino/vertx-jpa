@@ -57,6 +57,7 @@ This provides an asynchronous interface around a JDBC datasource to:
 
 
 It's a vertx-jdbc clone with new Actions and some different methods:
+
 - JPACreate
 - JPADelete
 - JPAHandlerQuery
