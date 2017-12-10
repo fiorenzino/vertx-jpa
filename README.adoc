@@ -26,9 +26,37 @@ This provides an asynchronous interface around a JDBC datasource to:
 
 - query with dynamic restrictions handler
 
+ RestrinctionHandler<JsonObject, String, StringBuffer> rh = new RestrinctionHandler<JsonObject, String, StringBuffer>()
+      {
+         String alias = "a";
+         String separator = " WHERE ";
+
+         @Override public void handle(JsonObject params, String table, StringBuffer toSql)
+         {
+            toSql.append("select * from " + table + " " + alias + " ");
+            if (params.getString("name") != null)
+            {
+               toSql.append(separator).append(alias).append(".name LIKE :name ");
+               params.put("name", "%" + params.getString("name") + "%");
+               separator = " and ";
+            }
+            if (params.getString("collection_name") != null)
+            {
+               toSql.append(separator).append(alias).append(".collection_name LIKE :collection_name ");
+               params.put("collection_name", "%" + params.getString("collection_name") + "%");
+               separator = " and ";
+            }
+            if (params.getString("uuid") != null)
+            {
+               toSql.append(separator).append(alias).append(".uuid = :uuid ");
+               separator = " and ";
+            }
+         }
+      };
+      jpaClient.query(TABLE_NAME, params, rh, handler);
 
 
-It's a vertx-jdbc clone with new Actions:
+It's a vertx-jdbc clone with new Actions and some different methods:
 - JPACreate
 - JPADelete
 - JPAHandlerQuery
