@@ -22,13 +22,13 @@ public class JPADeleteTest extends AbstractBaseTest
       Async async = context.async();
       jpaClient.getJPAConnection(conn -> {
          JPAConnection connection = conn.result();
-         connection.create(CREATE_TABLE, result -> {
+         connection.create(CREATE_TABLE_QUERY, result -> {
             System.out.println("create table");
             Assert.assertTrue(result.succeeded());
             connection.persist(TABLE, whiskyP.toJson(), result_p -> {
                System.out.println("persist");
                Assert.assertTrue(result_p.succeeded());
-               connection.delete(TABLE, new JsonObject().put(KEY_TABLE, whiskyP.uuid), result_d -> {
+               connection.delete(TABLE, new JsonObject().put(TABLE_KEY, whiskyP.uuid), result_d -> {
                   System.out.println("delete");
                   Assert.assertTrue(result_d.succeeded());
                   async.complete();
@@ -44,9 +44,9 @@ public class JPADeleteTest extends AbstractBaseTest
       Async async = context.async();
       jpaClient.rxGetConnection()
                .flatMap(conn -> {
-                  Single<ResultSet> resa = conn.rxCreate(CREATE_TABLE)
+                  Single<ResultSet> resa = conn.rxCreate(CREATE_TABLE_QUERY)
                            .flatMap(result1 -> conn.rxPersist(TABLE, whiskyP.toJson()))
-                           .flatMap(result3 -> conn.rxDelete(TABLE, new JsonObject().put(KEY_TABLE, whiskyP.uuid)))
+                           .flatMap(result3 -> conn.rxDelete(TABLE, new JsonObject().put(TABLE_KEY, whiskyP.uuid)))
                            .flatMap(result3 -> {
                               Assert.assertEquals(result3.getUpdated(), 1);
                               return conn.rxQuery(SELECT_COUNT_AS_NUM_QUERY, new JsonObject());

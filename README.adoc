@@ -5,19 +5,19 @@ This provides an asynchronous interface around a JDBC datasource to:
 
 - create table [to create table]
 
-     jpaClient.create(CREATE_TABLE, result -> {});
+     jpaClient.create("create table whiskies (uuid varchar(255), name varchar(255) ", result -> {});
 
 - find [to find by key]
 
-    jpaClient.find(TABLE, new JsonObject().put(KEY_TABLE, whiskyU.uuid), result_m -> {});
+    jpaClient.find(TABLE, new JsonObject().put(TABLE_KEY, whiskyU.uuid), result_m -> {});
 
 - delete [to delete by key]
 
-    jpaClient.delete(TABLE, new JsonObject().put(KEY_TABLE, whiskyP.uuid), result_d -> {});
+    jpaClient.delete(TABLE, new JsonObject().put(TABLE_KEY, whiskyP.uuid), result_d -> {});
 
 - merge [to merge a json object]
 
-    jpaClient.merge(TABLE, whiskyU.toJson(), new JsonObject().put(KEY_TABLE, whiskyU.uuid), result_m -> {});
+    jpaClient.merge(TABLE, whiskyU.toJson(), new JsonObject().put(TABLE_KEY, whiskyU.uuid), result_m -> {});
 
 - persist [to persist a json object]
 

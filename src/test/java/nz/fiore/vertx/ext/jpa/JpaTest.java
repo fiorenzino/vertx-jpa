@@ -40,7 +40,7 @@ public class JpaTest extends AbstractBaseTest
     jpaClient.rxGetConnection().flatMap(conn -> {
 
       // Now chain some statements using flatmap composition
-      Single<ResultSet> resa = conn.rxCreate(CREATE_TABLE)
+      Single<ResultSet> resa = conn.rxCreate(CREATE_TABLE_QUERY)
         .flatMap(result1 -> conn.rxPersist(TABLE, whiskyP.toJson()))
         .flatMap(result1 -> conn.rxPersist(TABLE, whiskyP1.toJson()))
         .flatMap(result2 -> conn

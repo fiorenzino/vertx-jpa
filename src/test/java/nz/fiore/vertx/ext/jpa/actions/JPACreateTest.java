@@ -19,7 +19,7 @@ public class JPACreateTest extends AbstractBaseTest
    public void create(TestContext context)
    {
       Async async = context.async();
-      jpaClient.create(CREATE_TABLE, result -> {
+      jpaClient.create(CREATE_TABLE_QUERY, result -> {
          Assert.assertTrue(result.succeeded());
          async.complete();
       });
@@ -29,7 +29,7 @@ public class JPACreateTest extends AbstractBaseTest
    public void createWithTypoError(TestContext context)
    {
       Async async = context.async();
-      jpaClient.create(CREATE_TABLE_TYPO_ERROR, result -> {
+      jpaClient.create(CREATE_TABLE_TYPO_ERROR_QUERY, result -> {
          Assert.assertFalse(result.succeeded());
          async.complete();
       });
@@ -39,7 +39,7 @@ public class JPACreateTest extends AbstractBaseTest
    public void createWithTypeError(TestContext context)
    {
       Async async = context.async();
-      jpaClient.create(CREATE_TABLE_TYPE_ERROR, result -> {
+      jpaClient.create(CREATE_TABLE_TYPE_ERROR_QUERY, result -> {
          Assert.assertFalse(result.succeeded());
          Assert.assertTrue(result.cause().getMessage().contains("type not found"));
          async.complete();

@@ -14,12 +14,12 @@ public abstract class AbstractBaseTest
 {
 
    public static String TABLE = "whiskies";
-   public static String CREATE_TABLE = "create table " + TABLE
+   public static String CREATE_TABLE_QUERY = "create table " + TABLE
             + " (uuid varchar(255), name varchar(255), collection_name varchar(255), date datetime NULL, amount decimal(19,4) )";
-   public static String KEY_TABLE = "uuid";
-   public static String CREATE_TABLE_TYPO_ERROR = "create table  " + TABLE
+   public static String TABLE_KEY = "uuid";
+   public static String CREATE_TABLE_TYPO_ERROR_QUERY = "create table  " + TABLE
             + " (uuid varchar(255), name varchar(255), collection_name varchar(255), date datetime NULL, amount decimal(19,4) ";
-   public static String CREATE_TABLE_TYPE_ERROR = "create table " + TABLE
+   public static String CREATE_TABLE_TYPE_ERROR_QUERY = "create table " + TABLE
             + " (uuid varchar(255), name varchar(255), collection_name varchar(255), date dt NULL, amount decimal(19,4) )";
    public static String SELECT_QUERY = "select * from " + TABLE;
    public static String SELECT_COUNT_AS_NUM_QUERY = "select count(*) as NUM from " + TABLE;

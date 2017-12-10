@@ -22,13 +22,13 @@ public class JPAMergeTest extends AbstractBaseTest
       Async async = context.async();
       jpaClient.getJPAConnection(conn -> {
          JPAConnection connection = conn.result();
-         connection.create(CREATE_TABLE, result -> {
+         connection.create(CREATE_TABLE_QUERY, result -> {
             System.out.println("create table");
             Assert.assertTrue(result.succeeded());
             connection.persist(TABLE, whiskyP.toJson(), result_p -> {
                System.out.println("persist");
                Assert.assertTrue(result_p.succeeded());
-               connection.merge(TABLE, whiskyU.toJson(), new JsonObject().put(KEY_TABLE, whiskyU.uuid), result_m -> {
+               connection.merge(TABLE, whiskyU.toJson(), new JsonObject().put(TABLE_KEY, whiskyU.uuid), result_m -> {
                   System.out.println("merge");
                   Assert.assertTrue(result_m.succeeded());
                   Assert.assertEquals(result_m.result().getUpdated(), 1);
@@ -45,10 +45,10 @@ public class JPAMergeTest extends AbstractBaseTest
       Async async = context.async();
       jpaClient.rxGetConnection()
                .flatMap(conn -> {
-                  Single<ResultSet> resa = conn.rxCreate(CREATE_TABLE)
+                  Single<ResultSet> resa = conn.rxCreate(CREATE_TABLE_QUERY)
                            .flatMap(result1 -> conn.rxPersist(TABLE, whiskyP.toJson()))
                            .flatMap(result3 -> conn
-                                    .rxMerge(TABLE, whiskyU.toJson(), new JsonObject().put(KEY_TABLE, whiskyU.uuid)))
+                                    .rxMerge(TABLE, whiskyU.toJson(), new JsonObject().put(TABLE_KEY, whiskyU.uuid)))
                            .flatMap(result3 -> {
                               Assert.assertEquals(result3.getUpdated(), 1);
                               return conn.rxQuery(SELECT_COUNT_AS_NUM_QUERY, new JsonObject());

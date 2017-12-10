@@ -22,7 +22,7 @@ public class JPAPersistTest extends AbstractBaseTest
       Async async = context.async();
       jpaClient.getJPAConnection(conn -> {
          JPAConnection connection = conn.result();
-         connection.create(CREATE_TABLE, result -> {
+         connection.create(CREATE_TABLE_QUERY, result -> {
             System.out.println("create table");
             Assert.assertTrue(result.succeeded());
             connection.persist(TABLE, whiskyP.toJson(), result_p -> {
@@ -40,7 +40,7 @@ public class JPAPersistTest extends AbstractBaseTest
       Async async = context.async();
       jpaClient.rxGetConnection()
                .flatMap(conn -> {
-                  Single<ResultSet> resa = conn.rxCreate(CREATE_TABLE)
+                  Single<ResultSet> resa = conn.rxCreate(CREATE_TABLE_QUERY)
                            .flatMap(result1 -> conn.rxPersist(TABLE, whiskyP.toJson()))
                            .flatMap(result3 -> {
                               Assert.assertEquals(result3.getUpdated(), 1);
