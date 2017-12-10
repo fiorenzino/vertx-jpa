@@ -3,23 +3,23 @@
 
 This provides an asynchronous interface around a JDBC datasource to:
 
-- create table
+- create table [to create table]
 
      jpaClient.create(CREATE_TABLE, result -> {});
 
-- find
+- find [to find by key]
 
     jpaClient.find(TABLE, new JsonObject().put(KEY_TABLE, whiskyU.uuid), result_m -> {});
 
-- delete
+- delete [to delete by key]
 
     jpaClient.delete(TABLE, new JsonObject().put(KEY_TABLE, whiskyP.uuid), result_d -> {});
 
-- merge
+- merge [to merge a json object]
 
     jpaClient.merge(TABLE, whiskyU.toJson(), new JsonObject().put(KEY_TABLE, whiskyU.uuid), result_m -> {});
 
-- persist
+- persist [to persist a json object]
 
     jpaClient.persist(TABLE, whiskyP.toJson(), result_p -> {});
 
@@ -72,4 +72,12 @@ It's a vertx-jdbc clone with new Actions and some different methods:
 - JPAStatementHelper
 
 
-Also with rxActions inside!
+Also with rxActions inside:
+
+- Single<Void> rxCreate(String sql);
+- Single<UpdateResult> rxPersist(String table, JsonObject params);
+- Single<UpdateResult> rxMerge(String table, JsonObject params, JsonObject key);
+- Single<UpdateResult> rxDelete(String table, JsonObject key);
+- Single<ResultSet> rxQuery(String sql, JsonObject params);
+- Single<ResultSet> rxQuery(String sql, JsonObject params,RestrinctionHandler<JsonObject, String, StringBuffer> restictionHandler);
+- Single<ResultSet> rxFind(String table, JsonObject key);
