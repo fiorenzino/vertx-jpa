@@ -3,6 +3,10 @@
 
 This provides an asynchronous interface around a JDBC datasource to:
 
+- JPAClient [like vertx official JDBCClient]
+
+    JPAClient jpaClient = JPAClient.createShared(vertx, config);
+
 - create table [to create table]
 
      jpaClient.create("create table whiskies (uuid varchar(255), name varchar(255) ", result -> {});
