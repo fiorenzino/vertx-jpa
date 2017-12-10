@@ -3,7 +3,7 @@
 
 This provides an asynchronous interface around a JDBC datasource to:
 
-- create
+- create table
 - delete
 - merge
 - persist
