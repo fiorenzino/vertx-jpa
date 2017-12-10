@@ -5,7 +5,9 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import nz.fiore.vertx.ext.jpa.model.Whisky;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -25,20 +27,20 @@ public abstract class AbstractBaseTest
    public static String SELECT_QUERY = "select * from " + TABLE;
    public static String SELECT_COUNT_AS_NUM_QUERY = "select count(*) as NUM from " + TABLE;
    public static String COUNT_ALIAS = "NUM";
-   JsonObject config = new JsonObject()
+   static JsonObject config = new JsonObject()
             .put("url", "jdbc:hsqldb:mem:test?shutdown=true")
             .put("driver_class", "org.hsqldb.jdbcDriver")
             .put("max_pool_size", 30);
-   protected JPAClient jpaClient;
-   protected Whisky whiskyP;
-   protected Whisky whiskyP1;
-   protected Whisky whiskyP2;
-   protected Whisky whiskyU;
+   protected static JPAClient jpaClient;
+   protected static Whisky whiskyP;
+   protected static Whisky whiskyP1;
+   protected static Whisky whiskyP2;
+   protected static Whisky whiskyU;
 
-   private Vertx vertx;
+   private static Vertx vertx;
 
-   @Before
-   public void setUp()
+   @BeforeClass
+   public static void setUp()
    {
       System.out.println("setUp");
       vertx = Vertx.vertx();
@@ -51,10 +53,11 @@ public abstract class AbstractBaseTest
       whiskyU.name = "flower UP";
    }
 
-   @After
-   public void shutDown()
+   @AfterClass
+   public static void shutDown()
    {
-      jpaClient.create(CREATE_TABLE_QUERY, result -> {});
+      jpaClient.create(CREATE_TABLE_QUERY, result -> {
+      });
       System.out.println("shutDown");
       vertx.close();
       jpaClient.close();
