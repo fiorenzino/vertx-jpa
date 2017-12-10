@@ -466,6 +466,62 @@ public interface JPAClient extends SQLClient
    }
 
    /**
+    * Executes the given prepared statement which may be an <code>SELECT * FROM TABLE</code>
+    * statement with the given parameters, this method acquires a connection from the the pool and executes the SQL
+    * statement and returns it back after the execution.
+    *
+    * @param table   the table to execute.
+    * @param key     name and value of table key.
+    * @param handler the handler which is called once the operation completes.
+    * @see java.sql.Statement#executeUpdate(String)
+    * @see java.sql.PreparedStatement#executeUpdate(String)
+    */
+
+   default JPAClient find(String table, JsonObject key, Handler<AsyncResult<ResultSet>> handler)
+   {
+      getJPAConnection(getJPAConnection -> {
+         if (getJPAConnection.failed())
+         {
+            handler.handle(Future.failedFuture(getJPAConnection.cause()));
+         }
+         else
+         {
+            final JPAConnection conn = getJPAConnection.result();
+
+            conn.find(table, key, query -> {
+               if (query.failed())
+               {
+                  conn.close(close -> {
+                     if (close.failed())
+                     {
+                        handler.handle(Future.failedFuture(close.cause()));
+                     }
+                     else
+                     {
+                        handler.handle(Future.failedFuture(query.cause()));
+                     }
+                  });
+               }
+               else
+               {
+                  conn.close(close -> {
+                     if (close.failed())
+                     {
+                        handler.handle(Future.failedFuture(close.cause()));
+                     }
+                     else
+                     {
+                        handler.handle(Future.succeededFuture(query.result()));
+                     }
+                  });
+               }
+            });
+         }
+      });
+      return this;
+   }
+
+   /**
     * Returns a connection that can be used to perform SQL operations on. It's important to remember
     * to close the connection when you are done, so it is returned to the pool.
     *
@@ -482,42 +538,49 @@ public interface JPAClient extends SQLClient
             RestrinctionHandler<JsonObject, String, StringBuffer> restictionHandler)
    {
       return new io.vertx.reactivex.core.impl.AsyncResultSingle<ResultSet>(handler -> {
-         rxQuery(sql, params, restictionHandler);
+         query(sql, params, restictionHandler, handler);
       });
    }
 
    default Single<ResultSet> rxQuery(String sql, JsonObject params)
    {
       return new io.vertx.reactivex.core.impl.AsyncResultSingle<ResultSet>(handler -> {
-         rxQuery(sql, params);
+         this.query(sql, params, handler);
       });
    }
 
    default Single<UpdateResult> rxDelete(String table, JsonObject key)
    {
       return new io.vertx.reactivex.core.impl.AsyncResultSingle<UpdateResult>(handler -> {
-         rxDelete(table, key);
+         delete(table, key, handler);
       });
    }
 
    default Single<UpdateResult> rxMerge(String table, JsonObject params, JsonObject key)
    {
       return new io.vertx.reactivex.core.impl.AsyncResultSingle<UpdateResult>(handler -> {
-         rxMerge(table, params, key);
+         merge(table, params, key, handler);
       });
    }
 
    default Single<UpdateResult> rxPersist(String table, JsonObject params)
    {
       return new io.vertx.reactivex.core.impl.AsyncResultSingle<UpdateResult>(handler -> {
-         rxPersist(table, params);
+         persist(table, params, handler);
       });
    }
 
    default Single<Void> rxCreate(String sql)
    {
       return new io.vertx.reactivex.core.impl.AsyncResultSingle<Void>(handler -> {
-         rxCreate(sql);
+         create(sql, handler);
+      });
+   }
+
+   default Single<ResultSet> rxFind(String table, JsonObject key)
+   {
+      return new io.vertx.reactivex.core.impl.AsyncResultSingle<ResultSet>(handler -> {
+         find(table, key, handler);
       });
    }
 }

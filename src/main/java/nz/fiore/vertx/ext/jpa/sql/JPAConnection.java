@@ -163,4 +163,30 @@ public interface JPAConnection extends SQLConnection
 
   Single<ResultSet> rxQuery(String sql, JsonObject params,
     RestrinctionHandler<JsonObject, String, StringBuffer> restictionHandler);
+
+  /**
+   * Executes the given prepared statement which may be an <code>SELECT * FROM TABLE</code>
+   * statement with the given parameters
+   *
+   * @param table         the table to execute.
+   * @param key           name and value of table key.
+   * @param resultHandler the handler which is called once the operation completes.
+   * @see java.sql.Statement#executeUpdate(String)
+   * @see java.sql.PreparedStatement#executeUpdate(String)
+   */
+  SQLConnection find(String table, JsonObject key,
+    Handler<AsyncResult<ResultSet>> resultHandler);
+
+  /**
+   * Executes the given prepared statement which may be an <code>SELECT * FROM TABLE</code>
+   * statement with the given parameters
+   *
+   * @param table the table to execute.
+   * @param key   name and value of table key.
+   * @see java.sql.Statement#executeUpdate(String)
+   * @see java.sql.PreparedStatement#executeUpdate(String)
+   */
+
+  Single<ResultSet> rxFind(String table, JsonObject key);
+
 }
