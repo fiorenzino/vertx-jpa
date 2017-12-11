@@ -43,6 +43,7 @@
             <id>sonatype-nexus-staging</id>
             <username>${env.SONATYPE_NEXUS_USERNAME}</username>
             <password>${env.SONATYPE_NEXUS_PASSWORD}</password>
+            <passphrase>${env.SONATYPE_NEXUS_PASSPHRASE}</passphrase>
         </server>
     </servers>
 
