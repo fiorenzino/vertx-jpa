@@ -38,6 +38,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:nscavell@redhat.com">Nick Scavelli</a>
  * @author <a href="mailto:plopes@redhat.com">Paulo Lopes</a>
+ * @author <a href="mailto:fiorenzo.pizza@gmail.com">Paulo Lopes</a>
  */
 class JPAConnectionImpl implements JPAConnection
 {
